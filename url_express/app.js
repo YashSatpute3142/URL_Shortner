@@ -2,6 +2,9 @@ import { readFile,writeFile  } from "fs/promises";
 import  {createServer} from "http";
 import crypto from "crypto";
 import path from "path";
+import express from "express"
+
+const app = express();
 
 
 
@@ -10,6 +13,8 @@ const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = path.join("data", "links.json");
 await writeFile(DATA_FILE, JSON.stringify({}))
+
+app.use(express.static("public"))
 
 const serveFile = async(res,filePath, contentType) => {
     try {
@@ -43,6 +48,14 @@ const loadLinks = async() => {
 const saveLinks = async(links) => {
     await writeFile(DATA_FILE, JSON.stringify(links))
 }
+
+app.get("/", (req, res) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+})
 
 const server = createServer(async(req, res) => {
     if(req.method === "GET"){
