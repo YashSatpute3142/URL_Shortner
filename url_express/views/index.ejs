@@ -32,7 +32,16 @@
         <h2>Shortenend URLs</h2>
         <div class="urls">
             <ul id="shortened-urls">
-                  {{shortened_urls}}
+
+            <% Object.entries(links).map(([shortCode, url]) =>{ %> 
+                <li>
+                    <a href="/<%= shortCode %>" target="_blank" >
+                        <%= host %>/<%= shortCode %>
+                    </a>
+                     -> <%= url %>
+                </li>
+            <%})%>
+
         </ul>
         </div>
         
