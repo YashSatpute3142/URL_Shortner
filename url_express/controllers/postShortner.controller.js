@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { loadLinks, saveLinks } from "../models/shortner.model.js";
+import { loadLinks, saveLinks,getLinkByShortCode } from "../models/shortner.model.js";
 
 
 export const getShortenerPage = async (req, res) => {
@@ -16,7 +16,7 @@ export const getShortenerPage = async (req, res) => {
     }
 }
 
-export const postUrlShortner =  async(req, res) => {
+export const postUrlShortner = async (req, res) => {
     try {
         const { url, shortCode } = req.body;
 
@@ -24,42 +24,40 @@ export const postUrlShortner =  async(req, res) => {
             return res.status(400).send("URL is required");
         }
 
-        const links = await loadLinks();
-
         const finalShortCode =
             shortCode?.trim() || crypto.randomBytes(4).toString("hex");
 
-        if (links[finalShortCode]) {
-            return res
-                .status(400)
-                .send("Short code already exists. Choose another.");
+        const existingLink = await getLinkByShortCode(finalShortCode);
+
+        if (existingLink) {
+            return res.status(400).send("Short code already exists.");
         }
 
-        links[finalShortCode] = url;
-
-        await saveLinks(links);
+        await saveLinks({
+            url,
+            shortCode: finalShortCode,
+        });
 
         res.redirect("/");
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error!");
     }
-
-}
+};
 
 export const redirectTOShortLink = async (req, res) => {
     try {
-        const links = await loadLinks();
+        const shortCode = req.params.shortCode;
 
-        const url = links[req.params.shortCode];
+        const link = await getLinkByShortCode(shortCode);
 
-        if (!url) {
+        if (!link) {
             return res.status(404).send("404 - Short URL Not Found");
         }
 
-        res.redirect(url);
+        res.redirect(link.url);
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal Server Error....!");
+        res.status(500).send("Internal Server Error!");
     }
-}
+};

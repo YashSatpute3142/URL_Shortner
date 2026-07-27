@@ -1,6 +1,10 @@
 import express from "express";
 import {shortenedRoutes} from "./routes/shortener.routes.js";
 
+
+console.log(process.env.MONGODB_URI);
+
+
 const app = express();
 
 const PORT = process.env.PORT || 3000;
