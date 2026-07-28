@@ -17,8 +17,14 @@ const userSchema = mongoose.Schema({
     updatedAt: {type: Date, default: Date.now()},
 
 })
+userSchema.pre(["updateOne", "updateMany","findOneAndUpdate"], function(next){
+    this.set({updatedAt: Date.now()});
+    next();
+})
 
 const User = mongoose.model("user", userSchema);
 
-await User.create({name:"Yash",email:"yash@gmail.com",age:20,})
+
+
+await User.updateOne({email:"yash@gmail.com"}, {$set:{age:20,}})
 await mongoose.connection.close();

@@ -33,10 +33,12 @@ export const postUrlShortner = async (req, res) => {
             return res.status(400).send("Short code already exists.");
         }
 
-        await saveLinks({
-            url,
-            shortCode: finalShortCode,
-        });
+        // await saveLinks({
+        //     url,
+        //     shortCode: finalShortCode,
+        // });
+
+        await saveLinks({url,shortCode: finalShortCode})
 
         res.redirect("/");
     } catch (error) {
