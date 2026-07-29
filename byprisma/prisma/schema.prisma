@@ -1,0 +1,15 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model shortlink {
+  id        Int      @id @default(autoincrement())
+  shortCode String   @unique(map: "shortLink_shortCode_key")
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}

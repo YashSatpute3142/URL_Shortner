@@ -1,0 +1,139 @@
+*{
+    margin: 0;
+    padding: 0%;
+    box-sizing: border-box;
+
+}
+.main-section{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f2dabd;
+    background: linear-gradient(342deg, rgba(242, 218, 189, 1) 0%, rgba(255, 194, 133, 1) 35%, rgba(245, 233, 215, 1) 100%);
+}
+.container{
+    width: 500px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: top;
+    gap: 2rem;
+    box-shadow: rgba(232, 111, 51, 0.24) 0px 3px 8px;
+    padding-top: 3rem;
+    padding-left: 1rem;
+    background-color: #fff;
+    border-radius: 1rem;
+
+}
+h1{
+    font-family: "Urbanist";
+    color: #f6bb72;
+
+}
+input{
+    font-size: 16px;
+    padding: 0.5rem;
+    width: 450px;
+    border: none;
+    
+    border: 1px solid #ffe4c4;
+    transition: all 0.4s linear;
+    
+
+    &:hover{
+        background-color: #f2dabd;
+        border: 1px solid #ffe4c4;
+        box-shadow: rgb(255, 228, 196) 0px 3px 8px;
+        border-radius: 1rem;
+    }
+    &:focus{
+        outline: none;
+    }
+}
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+button{
+    width: 80px;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 1rem;
+    margin-left: 40%;
+    margin-top: 1rem;
+    color: #fff;
+    background-color: #f2dabd;
+    border: none;
+    transition: all 0.4s linear;
+
+    &:hover{
+        color: #f2dabd;
+        background-color: transparent;
+        border: 1px solid rgb(255, 228, 196);
+        box-shadow: rgb(255, 228, 196) 0px 3px 8px;
+    }
+    
+    
+    
+}
+#shortened-urls{
+    display: flex;
+    flex-direction: column;
+    justify-content:center ;
+     list-style-position: inside;
+     align-items:center ;
+     gap: 1rem;
+}
+ a{
+    color: #f6bb72;
+    
+}
+li{
+    list-style: none;
+    text-align: center;
+    box-shadow: rgb(255, 228, 196) 0px 3px 8px;
+    padding: 0.5rem;
+    width: 450px;
+    transition: all 0.4s ease-in-out;
+
+    &:hover{
+        scale: 1.05;
+    }
+}
+
+.report-section{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+}
+.navbar{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 6rem;
+    background-color: black;
+}
+.navbar-links{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+.navbar-links li{
+    width: 100px;
+    text-align: center;
+    padding-top: 2rem;
+    box-shadow: none;
+    
+}
+.navbar-links a{
+    text-decoration-line: none;
+    color: #fff;
+
+}
