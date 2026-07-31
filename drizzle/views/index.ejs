@@ -7,6 +7,16 @@
     <title>URL</title>
 </head>
 <body>
+     <%- include('./partials/header') %> <% if(isLoggedIn) { %>
+        <h2>You Are Looged In</h2>
+        <%}else{ %>
+            <h2>You are not Logged In</h2>
+
+       <% } %>
+
+
+
+
     <section class="main-section">
     <div class="container">
         <h1>URL Shortener</h1>
@@ -46,11 +56,10 @@
         </div>
         
     </div>
+    
     </section>
-    <script>
-
-
-    </script>
+     <%- include('./partials/footer') %>
+    
     
 </body>
 </html>
