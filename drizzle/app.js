@@ -1,6 +1,7 @@
 import express from "express";
 import {shortenedRoutes} from "./routes/shortener.routes.js";
 import { authRoutes } from "./routes/auth.routes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs")
+
+app.use(cookieParser())
 //app.use(router)
 app.use(authRoutes)
 app.use(shortenedRoutes)

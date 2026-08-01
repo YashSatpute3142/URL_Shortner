@@ -9,9 +9,10 @@ export const getShortenerPage = async (req, res) => {
         // const links = await loadLinks();
         const links = await getAllShortLinks()
 
-        let isLoggedIn = req.headers.cookie;
-        isLoggedIn = Boolean(isLoggedIn?.split("=")[1])
-        console.log("~ getShortenerPage ~ isLoggedIn:", isLoggedIn);
+        // let isLoggedIn = req.headers.cookie;
+        // isLoggedIn = Boolean(isLoggedIn?.split("=")[1])
+        // console.log("~ getShortenerPage ~ isLoggedIn:", isLoggedIn);
+        let isLoggedIn = req.cookies.isLoggedIn;
         
 
         return res.render("index", {links, host: req.headers.host, isLoggedIn })

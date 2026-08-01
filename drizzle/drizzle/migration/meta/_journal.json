@@ -8,6 +8,20 @@
       "when": 1785419876982,
       "tag": "0000_plain_viper",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1785578077167,
+      "tag": "0001_tricky_major_mapleleaf",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1785581347805,
+      "tag": "0002_mighty_alice",
+      "breakpoints": true
     }
   ]
 }
