@@ -7,7 +7,7 @@
     <title>URL</title>
 </head>
 <body>
-     <%- include('./partials/header') %> <% if(isLoggedIn) { %>
+     <%- include('./partials/header') %> <% if(user) { %>
         <h2>You Are Looged In</h2>
         <%}else{ %>
             <h2>You are not Logged In</h2>
@@ -19,45 +19,76 @@
 
     <section class="main-section">
     <div class="container">
+
         <h1>URL Shortener</h1>
+
         <form id="shorten-form" action="/" method="post">
-            <div>
-                <label for="url">Enter URL:</label>
+
+            <div class="input-box">
+                <i class="fa-solid fa-link"></i>
                 <input 
-                type="url" 
-                name="url"
-                id="yrl" 
-                required
+                    type="url" 
+                    name="url"
+                    placeholder="Enter URL"
+                    required
                 >
             </div>
-            <div>
-                <label for="shortCode">Enter shortCode:</label>
-                <input type="text" name="shortCode" id="shortCode" required>
 
+
+            <div class="input-box">
+                <i class="fa-solid fa-code"></i>
+                <input 
+                    type="text" 
+                    name="shortCode"
+                    placeholder="Enter custom short code"
+                    required
+                >
             </div>
-            <button type="submit">Shorten</button>
+
+
+            <button type="submit">
+                Shorten
+            </button>
 
         </form>
 
-        <h2>Shortenend URLs</h2>
+
+        <h2>Shortened URLs</h2>
+
         <div class="urls">
+
             <ul id="shortened-urls">
 
             <% links.forEach((link) => { %>
-    <li>
-        <a href="/<%= link.shortCode %>" target="_blank">
-            <%= host %>/<%= link.shortCode %>
-        </a>
-        -> <%= link.url %>
-    </li>
-<% }) %>
 
-        </ul>
+                <li>
+
+                    <div class="url-data">
+
+                        <a href="/<%= link.shortCode %>" target="_blank">
+                            <i class="fa-solid fa-link"></i>
+                            <%= host %>/<%= link.shortCode %>
+                        </a>
+
+                        <p>
+                            <%= link.url %>
+                        </p>
+
+                    </div>
+
+
+                    <i class="fa-regular fa-copy copy-icon"></i>
+
+                </li>
+
+            <% }) %>
+
+            </ul>
+
         </div>
-        
+
     </div>
-    
-    </section>
+</section>
      <%- include('./partials/footer') %>
     
     

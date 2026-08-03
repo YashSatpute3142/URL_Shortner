@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "ebfb8a9b-115a-4943-9951-26b6a9794080",
-  "prevId": "c5d32e07-4e7f-4263-a728-e71372af666b",
+  "id": "cbdb9cbc-0370-47e5-bb6f-6d434f3bedea",
+  "prevId": "44d25061-0bd5-4f90-b124-8c2ef1771d16",
   "tables": {
     "users_table": {
       "name": "users_table",
@@ -27,10 +27,47 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_table_user_id_users_id_fk": {
+          "name": "users_table_user_id_users_id_fk",
+          "tableFrom": "users_table",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
         "users_table_id": {
           "name": "users_table_id",
@@ -82,17 +119,19 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "cal::local_datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "cal::local_datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},

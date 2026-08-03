@@ -1242,206 +1242,164 @@ footer .social-links a:hover {
    URL Shortener Index Page
    =========================== */
 
-.main-section {
-  width: 100%;
-  min-height: calc(100vh - 12rem);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-5) var(--spacing-3);
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #f6f7fb 50%,
-    #eeeeee 100%
-  );
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 
-/* Main URL Card */
-.main-section .container {
-  width: 100%;
-  max-width: 55rem;
-  background: var(--surface);
-  padding: var(--spacing-6);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+body{
+    font-family: Arial, sans-serif;
+    background:white;
+    color:#222;
 }
 
 
-/* Heading */
-.main-section h1 {
-  text-align: center;
-  font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: var(--spacing-5);
-  color: var(--foreground);
-}
-
-.main-section h2 {
-  font-size: 2rem;
-  margin-top: var(--spacing-5);
-  margin-bottom: var(--spacing-3);
-  color: var(--foreground);
+.main-section{
+    padding:40px 20px;
 }
 
 
-/* Form */
-#shorten-form {
-  width: 100%;
+.container{
+    width:95%;
+    max-width:900px;
+    margin:auto;
 }
 
 
-#shorten-form div {
-  margin-bottom: var(--spacing-4);
+.container h1{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:20px;
+    position:relative;
 }
 
 
-#shorten-form label {
-  display: block;
-  margin-bottom: var(--spacing-2);
-  font-size: 1.5rem;
-  color: var(--muted);
-  font-weight: 500;
+.container h1::after{
+    content:"";
+    position:absolute;
+    width:32px;
+    height:3px;
+    background:#2563eb;
+    left:0;
+    bottom:-12px;
 }
 
 
-#shorten-form input {
-  width: 100%;
-  padding: 1.2rem 1.4rem;
-  font-size: 1.6rem;
+/* form */
 
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-
-  background: #fff;
-
-  transition: 0.3s ease;
+.input-box{
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid #ddd;
+    height:50px;
+    margin-bottom:10px;
 }
 
 
-#shorten-form input:focus {
-  outline: none;
-  border-color: var(--accent);
+.input-box i{
+    color:#888;
+    font-size:13px;
+    margin-right:10px;
+}
 
-  box-shadow: 0 0 0 3px var(--ring);
+
+.input-box input{
+    width:100%;
+    border:none;
+    outline:none;
+    font-size:14px;
+}
+
+
+.input-box input::placeholder{
+    color:#aaa;
 }
 
 
 
-/* Submit Button */
-#shorten-form button {
-  width: 100%;
-  padding: 1.2rem;
-
-  border: none;
-  border-radius: var(--radius-md);
-
-  background: var(--accent);
-  color: white;
-
-  font-size: 1.6rem;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: 0.3s ease;
+button{
+    width:100%;
+    height:28px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    font-size:12px;
+    margin-top:5px;
 }
 
 
-#shorten-form button:hover {
-  background: var(--accent-hover);
-  transform: translateY(-2px);
+button:hover{
+    background:#1d4ed8;
 }
 
 
 
-/* URL List */
+/* urls */
 
-.urls {
-  width: 100%;
+.container h2{
+    font-size:15px;
+    margin-top:65px;
+    margin-bottom:20px;
 }
 
 
-#shortened-urls {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
+
+#shortened-urls{
+    list-style:none;
 }
 
 
-#shortened-urls li {
+#shortened-urls li{
 
-  padding: var(--spacing-3);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-  background: #fafafa;
+    border-bottom:1px solid #eee;
+    padding:12px 5px;
 
-  border: 1px solid var(--border);
-
-  border-radius: var(--radius-md);
-
-  font-size: 1.5rem;
-
-  word-break: break-word;
-
-  transition: 0.3s ease;
 }
 
 
-#shortened-urls li:hover {
+.url-data a{
 
-  transform: translateY(-3px);
+    text-decoration:none;
+    color:#2563eb;
+    font-size:13px;
 
-  box-shadow: var(--shadow-md);
+}
+
+
+.url-data a i{
+    font-size:12px;
+    margin-right:5px;
+}
+
+
+.url-data p{
+
+    color:#999;
+    font-size:12px;
+    margin-top:8px;
 
 }
 
 
 
-/* Short URL */
+.copy-icon{
 
-#shortened-urls a {
-
-  color: var(--accent);
-
-  font-weight: 600;
+    color:#777;
+    cursor:pointer;
+    font-size:14px;
 
 }
 
 
-#shortened-urls a:hover {
+.copy-icon:hover{
 
-  color: var(--accent-hover);
-
-  text-decoration: underline;
-
-}
-
-
-
-/* Responsive */
-
-@media(max-width:600px){
-
-  .main-section .container {
-
-    padding: var(--spacing-4);
-
-  }
-
-
-  .main-section h1 {
-
-    font-size: 2.4rem;
-
-  }
-
-
-  #shortened-urls li {
-
-    font-size: 1.4rem;
-
-  }
+    color:#2563eb;
 
 }

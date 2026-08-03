@@ -17,11 +17,14 @@
   "dependencies": {
     "argon2": "^0.45.1",
     "bcryptjs": "^3.0.3",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.44.7",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.23.2"
   },
   "devDependencies": {

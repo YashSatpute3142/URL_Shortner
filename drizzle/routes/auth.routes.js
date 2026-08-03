@@ -14,4 +14,12 @@ router.route("/login")
 .get(authControllers.getLoginPage)
 .post(authControllers.poetLogin)
 
+router
+.route("/me")
+.get(authControllers.getMe)
+
+router
+.route("/logout")
+.get(authControllers.logoutUser)
+
 export const authRoutes = router
