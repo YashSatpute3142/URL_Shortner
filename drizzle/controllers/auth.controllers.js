@@ -1,4 +1,5 @@
 import { comparePassword, createUser, generateToken, getUserByEmail, hashPassword } from "../services/auth.services.js";
+import { loginUserScema, registerUserSchema } from "../validators/auth-validation.js";
 
 export const getRegisterPage = (req, res) => {
  
@@ -8,7 +9,19 @@ export const getRegisterPage = (req, res) => {
 export const postRegister = async(req,res) => {
  
   
-  const {name, email, password} = req.body;
+ 
+  const {data, error} =  registerUserSchema.safeParse(req.body);
+  
+  
+
+  if(error) {
+    const errors = error.issues[0].message;
+    
+    req.flash("errors",errors)
+    
+    res.redirect("/register")
+  }
+   const {name, email, password} = req.body;
 
   const userExists = await getUserByEmail(email);
   
@@ -35,7 +48,18 @@ export const getLoginPage = (req, res) => {
 export const poetLogin = async(req, res) => {
  
   
-  const { email, password} = req.body;
+  const {data, error} =  loginUserScema.safeParse(req.body);
+  
+  
+
+  if(error) {
+    const errors = error.issues[0].message;
+    
+    req.flash("errors",errors)
+    
+    res.redirect("/login")
+  }
+   const {email, password} = req.body;
 
   const user = await getUserByEmail(email);
  

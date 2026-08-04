@@ -3,94 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>URL</title>
+    <title>URL Shortener</title>
+
+    <link rel="stylesheet" href="/style.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css"
+    >
 </head>
+
 <body>
-     <%- include('./partials/header') %> <% if(user) { %>
-        <h2>You Are Looged In</h2>
-        <%}else{ %>
-            <h2>You are not Logged In</h2>
 
-       <% } %>
+    <%- include('./partials/header') %>
 
+    <div class="main">
 
+        <section class="url-shortener">
 
+            <div class="container">
 
-    <section class="main-section">
-    <div class="container">
+                <div class="shortener-content">
 
-        <h1>URL Shortener</h1>
+                    <!-- Login Status -->
 
-        <form id="shorten-form" action="/" method="post">
+                    <div class="user-status">
 
-            <div class="input-box">
-                <i class="fa-solid fa-link"></i>
-                <input 
-                    type="url" 
-                    name="url"
-                    placeholder="Enter URL"
-                    required
-                >
-            </div>
+                        <% if(user){ %>
 
+                            <div class="status-badge success">
+                                <i class="zmdi zmdi-check-circle"></i>
+                                <span>You are logged in</span>
+                            </div>
 
-            <div class="input-box">
-                <i class="fa-solid fa-code"></i>
-                <input 
-                    type="text" 
-                    name="shortCode"
-                    placeholder="Enter custom short code"
-                    required
-                >
-            </div>
+                        <% }else{ %>
 
+                            <div class="status-badge warning">
+                                <i class="zmdi zmdi-alert-circle"></i>
+                                <span>You are not logged in</span>
+                            </div>
 
-            <button type="submit">
-                Shorten
-            </button>
-
-        </form>
-
-
-        <h2>Shortened URLs</h2>
-
-        <div class="urls">
-
-            <ul id="shortened-urls">
-
-            <% links.forEach((link) => { %>
-
-                <li>
-
-                    <div class="url-data">
-
-                        <a href="/<%= link.shortCode %>" target="_blank">
-                            <i class="fa-solid fa-link"></i>
-                            <%= host %>/<%= link.shortCode %>
-                        </a>
-
-                        <p>
-                            <%= link.url %>
-                        </p>
+                        <% } %>
 
                     </div>
 
+                    <!-- Form -->
 
-                    <i class="fa-regular fa-copy copy-icon"></i>
+                    <div class="shortener-form">
 
-                </li>
+                        <h1 class="form-title">
+                            URL Shortener
+                        </h1>
 
-            <% }) %>
+                        <form
+                            action="/"
+                            method="POST"
+                            class="url-form"
+                            id="url-form"
+                        >
 
-            </ul>
+                            <div class="form-group">
+
+                                <label for="url">
+                                    <i class="zmdi zmdi-link"></i>
+                                </label>
+
+                                <input
+                                    type="url"
+                                    id="url"
+                                    name="url"
+                                    placeholder="Enter URL"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="shortCode">
+                                    <i class="zmdi zmdi-code"></i>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="shortCode"
+                                    name="shortCode"
+                                    placeholder="Custom Short Code"
+                                >
+
+                            </div>
+
+                            <% if(typeof errors !== "undefined" && errors.length > 0){ %>
+
+                                <% errors.forEach(error => { %>
+
+                                    <p class="flash-error">
+                                        <%= error %>
+                                    </p>
+
+                                <% }) %>
+
+                            <% } %>
+
+                            <div class="form-group form-button">
+
+                                <input
+                                    type="submit"
+                                    value="Shorten"
+                                    class="form-submit"
+                                >
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                    <!-- Links -->
+
+                    <div class="shortened-urls">
+
+                        <h2 class="section-title">
+                            Shortened URLs
+                        </h2>
+
+                        <% if(links && links.length > 0){ %>
+
+                            <ul class="url-list">
+
+                                <% links.forEach(({id,url,shortCode}) => { %>
+
+                                    <% const truncatedUrl =
+                                    url.length > 30
+                                    ? url.slice(0,30) + "..."
+                                    : url;
+                                    %>
+
+                                    <li class="url-item">
+
+                                        <div class="url-info">
+
+                                            <a
+                                                href="/<%= shortCode %>"
+                                                target="_blank"
+                                                class="short-url"
+                                            >
+
+                                                <i class="zmdi zmdi-link"></i>
+
+                                                <%= host %>/<%= shortCode %>
+
+                                            </a>
+
+                                            <span class="original-url">
+
+                                                <%= truncatedUrl %>
+
+                                            </span>
+
+                                        </div>
+
+                                        <div class="url-actions">
+
+                                            <button
+                                                type="button"
+                                                class="copy-btn"
+                                                data-url="<%= host %>/<%= shortCode %>"
+                                            >
+                                                <i class="zmdi zmdi-copy"></i>
+                                            </button>
+
+                                            <a
+                                                href="/edit/<%= id %>"
+                                                class="copy-btn edit-btn"
+                                            >
+                                                <i class="zmdi zmdi-edit"></i>
+                                            </a>
+
+                                            <form
+                                                action="/delete/<%= id %>"
+                                                method="POST"
+                                            >
+
+                                                <button
+                                                    class="copy-btn delete-btn"
+                                                    type="submit"
+                                                >
+                                                    <i class="zmdi zmdi-delete"></i>
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </li>
+
+                                <% }) %>
+
+                            </ul>
+
+                        <% }else{ %>
+
+                            <p class="empty-list">
+
+                                No shortened URLs yet. Create one above!
+
+                            </p>
+
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- Pagination -->
+
+    <% if(typeof totalPages !== "undefined" && totalPages > 1){ %>
+
+        <div class="pagination">
+
+            <% if(currentPage > 1){ %>
+
+                <a
+                    href="?page=<%= currentPage-1 %>"
+                    class="page-link"
+                >
+                    &laquo; Previous
+                </a>
+
+            <% }else{ %>
+
+                <span class="page-link disabled">
+
+                    &laquo; Previous
+
+                </span>
+
+            <% } %>
+
+            <% for(let i=1;i<=totalPages;i++){ %>
+
+                <% if(i===currentPage){ %>
+
+                    <span class="page-link current">
+
+                        <%= i %>
+
+                    </span>
+
+                <% }else{ %>
+
+                    <a
+                        href="?page=<%= i %>"
+                        class="page-link"
+                    >
+
+                        <%= i %>
+
+                    </a>
+
+                <% } %>
+
+            <% } %>
+
+            <% if(currentPage < totalPages){ %>
+
+                <a
+                    href="?page=<%= currentPage+1 %>"
+                    class="page-link"
+                >
+
+                    Next &raquo;
+
+                </a>
+
+            <% }else{ %>
+
+                <span class="page-link disabled">
+
+                    Next &raquo;
+
+                </span>
+
+            <% } %>
 
         </div>
 
-    </div>
-</section>
-     <%- include('./partials/footer') %>
-    
-    
+    <% } %>
+
+    <%- include('./partials/footer') %>
+
+    <script>
+
+
+    </script>
+
 </body>
 </html>
