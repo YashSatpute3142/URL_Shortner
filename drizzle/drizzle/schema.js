@@ -1,5 +1,16 @@
 import { relations } from "drizzle-orm";
-import { int, mysqlTable, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  int,
+  mysqlTable,
+  timestamp,
+  varchar,
+  boolean,
+  text,
+} from "drizzle-orm/mysql-core";
+
+// ==========================
+// Users Table
+// ==========================
 
 export const usersTable = mysqlTable("users", {
   id: int().primaryKey().autoincrement(),
@@ -12,8 +23,42 @@ export const usersTable = mysqlTable("users", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .onUpdateNow()
+    .notNull(),
 });
+
+// ==========================
+// Sessions Table
+// ==========================
+
+export const sessionsTable = mysqlTable("sessions", {
+  id: int().primaryKey().autoincrement(),
+
+  userId: int("user_id")
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
+
+  valid: boolean().default(true).notNull(),
+
+  userAgent: text("user_agent"),
+
+  ip: varchar({ length: 255 }),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .onUpdateNow()
+    .notNull(),
+});
+
+// ==========================
+// Short Links Table
+// ==========================
 
 export const shortLinksTable = mysqlTable("users_table", {
   id: int().primaryKey().autoincrement(),
@@ -26,22 +71,46 @@ export const shortLinksTable = mysqlTable("users_table", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .onUpdateNow()
+    .notNull(),
 
   userId: int("user_id")
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
 });
 
-// Users -> Short Links (One to Many)
-export const usersRelation = relations(usersTable, ({ many }) => ({
+// ==========================
+// Relations
+// ==========================
+
+// User -> ShortLinks & Sessions
+export const usersRelations = relations(usersTable, ({ many }) => ({
   shortLinks: many(shortLinksTable),
+  sessions: many(sessionsTable),
 }));
 
-// Short Link -> User (Many to One)
-export const shortLinksRelation = relations(shortLinksTable, ({ one }) => ({
-  user: one(usersTable, {
-    fields: [shortLinksTable.userId],
-    references: [usersTable.id],
-  }),
-}));
+// ShortLink -> User
+export const shortLinksRelations = relations(
+  shortLinksTable,
+  ({ one }) => ({
+    user: one(usersTable, {
+      fields: [shortLinksTable.userId],
+      references: [usersTable.id],
+    }),
+  })
+);
+
+// Session -> User
+export const sessionsRelations = relations(
+  sessionsTable,
+  ({ one }) => ({
+    user: one(usersTable, {
+      fields: [sessionsTable.userId],
+      references: [usersTable.id],
+    }),
+  })
+);

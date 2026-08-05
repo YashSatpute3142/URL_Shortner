@@ -4,7 +4,8 @@ import { authRoutes } from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import flash from "connect-flash";
-import {verifyAuthentication} from "./middlewares/verify.auth.middleware.js"
+import {verifyAuthentication} from "./middlewares/verify.auth.middleware.js";
+import requestIp from "request-ip"
 
 const app = express();
 
@@ -23,7 +24,7 @@ app.use(session({secret:"my-secret", resave:true, saveUninitialized: false}))
 
 app.use(flash())
 
-
+app.use(requestIp.mw())
 
 app.use(verifyAuthentication)
 app.use((req, res, next) => {

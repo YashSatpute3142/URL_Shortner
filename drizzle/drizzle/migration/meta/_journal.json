@@ -15,6 +15,13 @@
       "when": 1785765237937,
       "tag": "0001_black_winter_soldier",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1785925059136,
+      "tag": "0002_strong_juggernaut",
+      "breakpoints": true
     }
   ]
 }

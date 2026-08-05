@@ -1,10 +1,10 @@
 import { verifyJWTToken } from "../services/auth.services.js";
 
 export const verifyAuthentication = (req,res,next) => {
-    console.log("Cookies:", req.cookies);
+    ;
 
     const token = req.cookies.access_token;
-    console.log("Token:", token);
+  
     if(!token){
         req.user = null;
         return next(); 
@@ -20,3 +20,4 @@ export const verifyAuthentication = (req,res,next) => {
     
      return next(); 
 }
+

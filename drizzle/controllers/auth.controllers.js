@@ -1,4 +1,5 @@
-import { comparePassword, createUser, generateToken, getUserByEmail, hashPassword } from "../services/auth.services.js";
+import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
+import { comparePassword, createAccessToken, createRefreshToken, createSessions, createUser,getUserByEmail, hashPassword } from "../services/auth.services.js";
 import { loginUserScema, registerUserSchema } from "../validators/auth-validation.js";
 
 export const getRegisterPage = (req, res) => {
@@ -76,14 +77,39 @@ export const poetLogin = async(req, res) => {
 
   // res.cookie("isLoggedIn",true)
 
-  const token = generateToken({
+  // const token = generateToken({
+  //   id:user.id,
+  //   name:user.name,
+  //   email:user.email
+  // }) 
+
+  // res.cookie("access_token", token)
+  //creation of sessions
+
+  const session = await createSessions(user.id, {
+    ip:req.clientIp,
+    userAgent:req.headers["user-agent"],
+  })
+  const accessToken = createAccessToken({
     id:user.id,
     name:user.name,
-    email:user.email
-  }) 
+    email:user.email,
+    sessionId:session.id,
+  })
+  const refreshToken = createRefreshToken(session.id);
 
-  res.cookie("access_token", token)
+  const baseConfig = {httpOnly:true, secure:true};
 
+  res.cookie("access_token", accessToken, {
+    ...baseConfig,
+    maxAge:ACCESS_TOKEN_EXPIRY,
+  })
+
+  
+  res.cookie("refresh_token", refreshToken, {
+    ...baseConfig,
+    maxAge: REFRESH_TOKEN_EXPIRY,
+  })
 
   res.redirect("/");
 };
