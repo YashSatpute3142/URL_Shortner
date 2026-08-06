@@ -21,6 +21,8 @@ export const usersTable = mysqlTable("users", {
 
   password: varchar({ length: 255 }).notNull(),
 
+  isEmailValid:boolean("is_email_valid").default(false).notNull(),
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
   updatedAt: timestamp("updated_at")

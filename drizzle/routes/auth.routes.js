@@ -10,13 +10,20 @@ router.route("/register")
 .get(authControllers.getRegisterPage)
 .post(authControllers.postRegister)
 
-router.route("/login")
+router
+.route("/login")
 .get(authControllers.getLoginPage)
 .post(authControllers.poetLogin)
 
 router
+.route("/profile")
+.get(authControllers.getProfilePage)
+
+
+router
 .route("/me")
 .get(authControllers.getMe)
+
 
 router
 .route("/logout")

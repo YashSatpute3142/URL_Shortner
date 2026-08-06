@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import {db} from "../config/db.js";
-import { sessionsTable, usersTable } from "../drizzle/schema.js";
+import { sessionsTable, shortLinksTable, usersTable } from "../drizzle/schema.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_EXPIRY, MILLISECONDS_PER_SECOND, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
@@ -50,11 +50,14 @@ export const createAccessToken = ({id,name,email,sessionId}) => {
 }
 
 export const createRefreshToken = (sessionId) => {
-    return jwt.sign({sessionId}, process.env.JWT_SECRET, {
-        expiresIn:ACCESS_TOKEN_EXPIRY/MILLISECONDS_PER_SECOND,
-    })
-
-}
+    return jwt.sign(
+        { sessionId },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: REFRESH_TOKEN_EXPIRY / MILLISECONDS_PER_SECOND,
+        }
+    );
+};
 
 export const verifyJWTToken = (token) => {
     return jwt.verify(token, process.env.JWT_SECRET)
@@ -81,39 +84,44 @@ export const findUserById = async(userId) => {
 
 //refereshToken
 
-export const refreshTokens = async(refereshToken) => {
+export const refreshTokens = async (refreshToken) => {
     try {
-        const decodedToken = verifyJWTToken(refereshToken);
-        const currentSessions = await findSessionById(decodedToken.sessionId);
+        const decodedToken = verifyJWTToken(refreshToken);
 
-        if(!currentSessions || !currentSessions.valid) {
+        const currentSession = await findSessionById(decodedToken.sessionId);
+
+        if (!currentSession || !currentSession.valid) {
             throw new Error("Invalid session");
         }
 
-        const user = await findUserById(currentSessions.userId)
+        const user = await findUserById(currentSession.userId);
 
-        if(!user) throw new Error("Invalid User");
+        if (!user) {
+            throw new Error("Invalid user");
+        }
 
         const userInfo = {
-            id:user.id,
-            name:user.name,
+            id: user.id,
+            name: user.name,
             email: user.email,
-            sessionId: currentSessions.id,
-        }
-        const newAccessToken = createAccessToken(userInfo)
-        const newRefreshToken = createRefreshToken(currentSessions.id);
+            isEmailValid:user.isEmailValid,
+            sessionId: currentSession.id,
+        };
+
+        const newAccessToken = createAccessToken(userInfo);
+
+        const newRefreshToken = createRefreshToken(currentSession.id);
 
         return {
             newAccessToken,
             newRefreshToken,
-            user:userInfo
-        }
-
+            user: userInfo,
+        };
     } catch (error) {
         console.log(error.message);
-        
+        return null;
     }
-}
+};
 
 
 export const cleareSession = async(sessionId) => {
@@ -131,11 +139,12 @@ export const authenticateUser = async({req, res, user,name, email}) => {
     id:user.id,
     name:user.name || name,
     email:user.email || email,
+    isEmailValid: false,
     sessionId:session.id,
   })
   const refreshToken = createRefreshToken(session.id);
 
-  const baseConfig = {httpOnly:true, secure:true};
+  const baseConfig = {httpOnly:true, secure:false};
 
   res.cookie("access_token", accessToken, {
     ...baseConfig,
@@ -147,4 +156,12 @@ export const authenticateUser = async({req, res, user,name, email}) => {
     ...baseConfig,
     maxAge: REFRESH_TOKEN_EXPIRY,
   })
+}
+
+export const getAllShortLinks = async(userId) => {
+    return await db
+    .select()
+    .from(shortLinksTable)
+    .where(eq(shortLinksTable.userId, userId));
+
 }
