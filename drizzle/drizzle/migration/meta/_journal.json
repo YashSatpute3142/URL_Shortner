@@ -29,6 +29,27 @@
       "when": 1786021575662,
       "tag": "0003_daily_abomination",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1786023736669,
+      "tag": "0004_useful_stone_men",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1786024251975,
+      "tag": "0005_absent_black_bird",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1786097383102,
+      "tag": "0006_brief_garia",
+      "breakpoints": true
     }
   ]
 }

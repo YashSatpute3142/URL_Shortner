@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   int,
   mysqlTable,
@@ -7,6 +7,25 @@ import {
   boolean,
   text,
 } from "drizzle-orm/mysql-core";
+
+
+export const verifyEmailTokenTable = mysqlTable("verify_email_tokens", {
+  id: int().primaryKey().autoincrement(),
+
+  userId: int("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+
+  token: varchar("token", { length: 8 }).notNull(),
+
+  expiresAt: timestamp("expires_at")
+    .default(sql`(CURRENT_TIMESTAMP + INTERVAL 1 DAY)`)
+    .notNull(),
+
+  createdAt: timestamp("created_at")
+    .defaultNow()
+    .notNull(),
+});
 
 // ==========================
 // Users Table

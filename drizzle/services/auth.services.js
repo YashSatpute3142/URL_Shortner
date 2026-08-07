@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 import {db} from "../config/db.js";
-import { sessionsTable, shortLinksTable, usersTable } from "../drizzle/schema.js";
+import { sessionsTable, shortLinksTable, usersTable, verifyEmailTokenTable } from "../drizzle/schema.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
+import crypto  from "crypto";
 import { ACCESS_TOKEN_EXPIRY, MILLISECONDS_PER_SECOND, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
 
 export const getUserByEmail = async(email) => {
@@ -164,4 +165,24 @@ export const getAllShortLinks = async(userId) => {
     .from(shortLinksTable)
     .where(eq(shortLinksTable.userId, userId));
 
+}
+
+export const generateRandomToken = async(digit = 8) => {
+    const min = 10 ** (digit -1);
+    const max = 10 ** digit;
+    return crypto.randomInt(min, max).toString()
+}
+
+export const insertVerifyEmailToken = async({userId, token}) => {
+
+    await db.delete(verifyEmailTokenTable).where(lt(verifyEmailTokenTable.expiresAt, sql`CURRENT_TIMESTAMP`))
+
+    await db.insert(verifyEmailTokenTable).values({userId,token});
+
+    
+}
+
+export const createVerifyEmailLink = async({email,token}) => {
+    const uriEncodedEmail = encodeURIComponent(email);
+    return `${process.env.FRONTEND_URL}/verify-email-token=${token}&email=${uriEncodedEmail}`;
 }

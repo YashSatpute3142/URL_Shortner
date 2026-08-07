@@ -992,6 +992,7 @@ footer .social-links a:hover {
 /* Form styles */
 .form {
   width: 100%;
+
 }
 
 .form-inline {
@@ -1002,13 +1003,17 @@ footer .social-links a:hover {
 
 .form-group {
   margin-bottom: 20px;
+  
 }
 
 .control-label {
+  margin-top: 5rem;
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
   color: #555;
+  padding-bottom: 16rem;
+
 }
 
 .form-control {
@@ -1019,6 +1024,7 @@ footer .social-links a:hover {
   border: 1px solid #ddd;
   border-radius: 4px;
   box-sizing: border-box;
+  margin-top: 2rem;
 }
 
 .form-control:focus {

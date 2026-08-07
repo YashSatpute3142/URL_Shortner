@@ -24,6 +24,13 @@ router
 .route("/me")
 .get(authControllers.getMe)
 
+router
+.route("/verify-email")
+.get(authControllers.getVerifyEmailPage)
+
+router
+.route("/resend-verification-link")
+.post(authControllers.resendVerificationLink)
 
 router
 .route("/logout")
