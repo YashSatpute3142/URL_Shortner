@@ -1,6 +1,7 @@
 import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
-import { authenticateUser, cleareSession, comparePassword, createAccessToken, createRefreshToken, createSessions, createUser,findUserById,generateRandomToken,getAllShortLinks,getUserByEmail, hashPassword, insertVerifyEmailToken } from "../services/auth.services.js";
-import { loginUserScema, registerUserSchema } from "../validators/auth-validation.js";
+import { sendEmail } from "../lib/nodemailer.js";
+import { authenticateUser, cleareSession, clearVerifyEmailTokens, comparePassword, createAccessToken, createRefreshToken, createSessions, createUser,createVerifyEmailLink,findUserById,findVerificationEmailToken,generateRandomToken,getAllShortLinks,getUserByEmail, hashPassword, insertVerifyEmailToken, sendNewVefifyEmailLink, verifyuserEmailAndUpdate } from "../services/auth.services.js";
+import { loginUserScema, registerUserSchema, verifyEmailSchema } from "../validators/auth-validation.js";
 
 export const getRegisterPage = (req, res) => {
  
@@ -39,7 +40,7 @@ export const postRegister = async(req,res) => {
   
   await authenticateUser({req, res, user,name, email});
 
-  
+ await sendNewVefifyEmailLink(user.id, email);
 
   res.redirect("/");
   
@@ -152,16 +153,29 @@ export const resendVerificationLink = async(req, res) => {
 
   if (!user || user.isEmailValid) return res.redirect("/");
 
-  const randomToken = generateRandomToken();
+  await sendNewVefifyEmailLink(req.user.id, req.user.email);
 
-  await insertVerifyEmailToken({userId: req.user.id, token: randomToken});
+    res.redirect("/verify-email");
 
-  const verifyEmailLink = await createVerifyEmailLink({
-        email:req.user.email,
-        token:randomToken,
-        
-    })
+}
 
+export const verifyEmailToken = async(req,res) => {
+  const {data, error} = verifyEmailSchema.safeParse(req.query);
+  
+  if(error){
+    return res.send("Verification link invalid or expired!")
+  }
 
+  // const token =  await findVerificationEmailToken(data); without join 
+  const [token] =  await findVerificationEmailToken(data); // with join
+ console.log( "~ Verification ~ Token: ", token);
+  if(!token) res.send("Verification link invalid or expired!");
 
+  await verifyuserEmailAndUpdate(token.email);
+
+  // clearVerifyEmailTokens(token.email).catch(console.error());
+  clearVerifyEmailTokens(token.userId).catch(console.error());
+
+  return res.redirect("/profile")
+  
 }

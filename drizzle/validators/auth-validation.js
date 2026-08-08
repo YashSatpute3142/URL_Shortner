@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { email } from "zod";
 export const loginUserScema =z.object ({
   
     email: z
@@ -22,5 +22,10 @@ export const registerUserSchema = loginUserScema.extend({
     .max(100,{message: "Name must no more than 100 characters."}),
 
 
+})
+
+export const verifyEmailSchema = z.object({
+    token: z.string().trim().length(8),
+    email: z.string().trim().email(),
 })
 

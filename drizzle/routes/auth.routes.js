@@ -33,6 +33,10 @@ router
 .post(authControllers.resendVerificationLink)
 
 router
+.route("/verify-email-token")
+.get(authControllers.verifyEmailToken)
+
+router
 .route("/logout")
 .get(authControllers.logoutUser)
 

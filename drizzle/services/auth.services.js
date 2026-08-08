@@ -1,10 +1,15 @@
-import { eq, lt } from "drizzle-orm";
+import { and, eq, gte, like, lt, sql } from "drizzle-orm";
 import {db} from "../config/db.js";
 import { sessionsTable, shortLinksTable, usersTable, verifyEmailTokenTable } from "../drizzle/schema.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import crypto  from "crypto";
 import { ACCESS_TOKEN_EXPIRY, MILLISECONDS_PER_SECOND, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
+import fs from "fs/promises"
+import { sendEmail } from "../lib/nodemailer.js";
+import path from "path";
+import ejs from "ejs";
+import mjml2html from "mjml";
 
 export const getUserByEmail = async(email) => {
     const [user] = await db
@@ -167,7 +172,7 @@ export const getAllShortLinks = async(userId) => {
 
 }
 
-export const generateRandomToken = async(digit = 8) => {
+export const generateRandomToken =(digit = 8) => {
     const min = 10 ** (digit -1);
     const max = 10 ** digit;
     return crypto.randomInt(min, max).toString()
@@ -175,14 +180,149 @@ export const generateRandomToken = async(digit = 8) => {
 
 export const insertVerifyEmailToken = async({userId, token}) => {
 
-    await db.delete(verifyEmailTokenTable).where(lt(verifyEmailTokenTable.expiresAt, sql`CURRENT_TIMESTAMP`))
+    return db.transaction(async(tx) => {
+        try {
+        await tx.delete(verifyEmailTokenTable).where(lt(verifyEmailTokenTable.expiresAt, sql`CURRENT_TIMESTAMP`));
 
-    await db.insert(verifyEmailTokenTable).values({userId,token});
+        await tx.delete(verifyEmailTokenTable).where(eq(verifyEmailTokenTable.userId, userId))
 
+        await tx.insert(verifyEmailTokenTable).values({userId,token});
+
+    } catch (error) {
+        console.log("error :", error);
+          
+    }
+
+    }) 
     
 }
 
 export const createVerifyEmailLink = async({email,token}) => {
-    const uriEncodedEmail = encodeURIComponent(email);
-    return `${process.env.FRONTEND_URL}/verify-email-token=${token}&email=${uriEncodedEmail}`;
+
+    const url = new URL(`${process.env.FRONTEND_URL}/verify-email-token`);
+    url.searchParams.append("token", token);
+    url.searchParams.append("email", email);
+
+    return url.toString();
 }
+
+// export const findVerificationEmailToken = async({token, email}) => {
+//     const tokenData = await db.select({
+//         userId: verifyEmailTokenTable.userId,
+//         token: verifyEmailTokenTable.token,
+//         expiresAt: verifyEmailTokenTable.expiresAt,
+    
+//     }).from(verifyEmailTokenTable)
+//     .where(and(
+//         eq(verifyEmailTokenTable.token, token), 
+//         gte(verifyEmailTokenTable.expiresAt, sql`CURRENT_TIMESTAMP`)
+//     ))
+
+//     if(!tokenData.length){
+//         return null;
+//     }
+//     const {userId} = tokenData[0];
+
+//     const userData = await db.select({
+//         userId:usersTable.id,
+//         email:usersTable.email,
+//     }).from(usersTable)
+//     .where(eq(usersTable.id, userId));
+
+//     if(!userData.length){
+//         return null
+//     }
+//     return{
+//         userId:userData[0].userId,
+//         email:userData[0].email,
+//         token:userData[0].token,
+//         expiresAt:userData[0].expiresAt,
+
+//     }
+ 
+// }
+
+export const findVerificationEmailToken = async({token, email}) => {
+    return await db
+    .select({
+        userId:usersTable.id,
+        email:usersTable.email,
+        token: verifyEmailTokenTable.token,
+        expiresAt: verifyEmailTokenTable.expiresAt,
+
+    
+    }).from(verifyEmailTokenTable)
+    .where(and(
+        eq(verifyEmailTokenTable.token, token), 
+        gte(verifyEmailTokenTable.expiresAt, sql`CURRENT_TIMESTAMP`),
+        eq(usersTable.email, email)
+    ))
+    .innerJoin(usersTable, eq(verifyEmailTokenTable.userId , usersTable.id))
+
+}
+
+export const verifyuserEmailAndUpdate = (email) => {
+    return db 
+    .update(usersTable)
+    .set({isEmailValid: true})
+    .where(eq(usersTable.email, email));
+
+}
+
+export const clearVerifyEmailTokens = async(userId) => {
+    // const [user] = await db
+    // .select()
+    // .from(usersTable)
+    // .where(eq(usersTable.email, email));
+
+    return await db
+    .delete(verifyEmailTokenTable)
+    .where(eq(verifyEmailTokenTable.userId, userId));
+}
+
+export const sendNewVefifyEmailLink = async (userId, email) => {
+    const randomToken = generateRandomToken();
+
+    await insertVerifyEmailToken({
+        userId,
+        token: randomToken,
+    });
+
+    const verifyEmailLink = await createVerifyEmailLink({
+        email,
+        token: randomToken,
+    });
+
+    const mjmlTemplate = await fs.readFile(
+        path.join(
+            import.meta.dirname,
+            "..",
+            "emails",
+            "verify-email.mjml"
+        ),
+        "utf-8"
+    );
+
+    // EJS → fill variables
+    const filledTemplate = ejs.render(mjmlTemplate, {
+        code: randomToken,
+        link: verifyEmailLink,
+    });
+
+    // MJML → HTML
+    const htmlOutput = await mjml2html(filledTemplate);
+
+    // Check MJML errors
+    if (htmlOutput.errors?.length > 0) {
+        console.error("MJML Errors:", htmlOutput.errors);
+    }
+
+    console.log("Generated HTML length:", htmlOutput.html.length);
+
+    // Send email
+    await sendEmail({
+        to: email,
+        subject: "Verify your email",
+        html: htmlOutput.html,
+    });
+};
