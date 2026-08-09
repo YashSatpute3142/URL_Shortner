@@ -1,7 +1,7 @@
 import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
-import { sendEmail } from "../lib/nodemailer.js";
-import { authenticateUser, cleareSession, clearVerifyEmailTokens, comparePassword, createAccessToken, createRefreshToken, createSessions, createUser,createVerifyEmailLink,findUserById,findVerificationEmailToken,generateRandomToken,getAllShortLinks,getUserByEmail, hashPassword, insertVerifyEmailToken, sendNewVefifyEmailLink, verifyuserEmailAndUpdate } from "../services/auth.services.js";
-import { loginUserScema, registerUserSchema, verifyEmailSchema } from "../validators/auth-validation.js";
+import { sendEmail } from "../lib/send-email.js";
+import { authenticateUser, cleareSession, clearVerifyEmailTokens, comparePassword, createAccessToken, createRefreshToken, createSessions, createUser,createVerifyEmailLink,findUserById,findVerificationEmailToken,generateRandomToken,getAllShortLinks,getUserByEmail, hashPassword, insertVerifyEmailToken, sendNewVefifyEmailLink, updateUserByName, verifyuserEmailAndUpdate } from "../services/auth.services.js";
+import { loginUserScema, registerUserSchema, verifyEmailSchema, verifyUserSchema } from "../validators/auth-validation.js";
 
 export const getRegisterPage = (req, res) => {
  
@@ -178,4 +178,38 @@ export const verifyEmailToken = async(req,res) => {
 
   return res.redirect("/profile")
   
+}
+
+export const getEditProfilePage = async(req, res) => {
+
+  if(!req.user) return res.redirect("/");
+
+  const user = await findUserById(req.user.id);
+  if(!user) return res.status(404).send("User not found");
+
+  return res.render("auth/edit-profile", {
+    name:user.name,
+    errors: req.flash("errors"),
+  })
+
+}
+
+export const postChangeEditPeofile = async(req, res) => {
+  if(!req.user) return res.redirect("/");
+
+  const {data, error} = verifyUserSchema.safeParse(req.body) 
+
+  if (error) {
+  const errorMessages = error.issues.map((err) => err.message);
+
+  req.flash("errors", errorMessages);
+
+  return res.redirect("/edit-profile");
+}
+
+  await updateUserByName({userId:req.user.id, name:data.name})
+
+  return res.redirect("/profile")
+
+
 }

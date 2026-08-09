@@ -6,10 +6,12 @@ import jwt from "jsonwebtoken";
 import crypto  from "crypto";
 import { ACCESS_TOKEN_EXPIRY, MILLISECONDS_PER_SECOND, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
 import fs from "fs/promises"
-import { sendEmail } from "../lib/nodemailer.js";
+// import { sendEmail } from "../lib/send-email.js";
+
 import path from "path";
 import ejs from "ejs";
 import mjml2html from "mjml";
+import { sendEmail } from "../lib/send-email.js";
 
 export const getUserByEmail = async(email) => {
     const [user] = await db
@@ -243,7 +245,7 @@ export const createVerifyEmailLink = async({email,token}) => {
 // }
 
 export const findVerificationEmailToken = async({token, email}) => {
-    return await db
+    return db
     .select({
         userId:usersTable.id,
         email:usersTable.email,
@@ -326,3 +328,10 @@ export const sendNewVefifyEmailLink = async (userId, email) => {
         html: htmlOutput.html,
     });
 };
+
+export const updateUserByName = async({userId, name}) => {
+    return await db
+    .update(usersTable)
+    .set({name:name})
+    .where(eq(usersTable.id, userId))
+}

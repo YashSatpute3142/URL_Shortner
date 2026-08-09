@@ -1,5 +1,13 @@
-import z, { email } from "zod";
+import z from "zod";
+
+const nameSchema = z
+    .string()
+    .trim()
+    .min(3, {message: "Name must be at least 3 character long."})
+    .max(100,{message: "Name must no more than 100 characters."})
+    
 export const loginUserScema =z.object ({
+
   
     email: z
     .string()
@@ -15,7 +23,7 @@ export const loginUserScema =z.object ({
 })
 
 export const registerUserSchema = loginUserScema.extend({
-    name: z
+    name:  z
     .string()
     .trim()
     .min(3, {message: "Name must be at least 3 character long."})
@@ -27,5 +35,9 @@ export const registerUserSchema = loginUserScema.extend({
 export const verifyEmailSchema = z.object({
     token: z.string().trim().length(8),
     email: z.string().trim().email(),
+})
+
+export const verifyUserSchema = z.object({
+    name:nameSchema,
 })
 

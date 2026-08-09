@@ -37,6 +37,11 @@ router
 .get(authControllers.verifyEmailToken)
 
 router
+.route("/edit-profile")
+.get(authControllers.getEditProfilePage)
+.post(authControllers.postChangeEditPeofile)
+
+router
 .route("/logout")
 .get(authControllers.logoutUser)
 

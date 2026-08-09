@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+// import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
@@ -14,23 +14,23 @@ const transporter = nodemailer.createTransport({
 });
 
 
-export const sendEmail = async ({ to, subject, html }) => {
-    try {
-        const info = await transporter.sendMail({
-            from: `"URL SHORTENER" <elnora.hessel0@ethereal.email>`,
-            to,
-            subject,
-            html,
-        });
+// export const sendEmail = async ({ to, subject, html }) => {
+//     try {
+//         const info = await transporter.sendMail({
+//             from: `"URL SHORTENER" <elnora.hessel0@ethereal.email>`,
+//             to,
+//             subject,
+//             html,
+//         });
 
-        console.log("Email sent");
-        console.log(
-            "Preview URL:",
-            nodemailer.getTestMessageUrl(info)
-        );
+//         console.log("Email sent");
+//         console.log(
+//             "Preview URL:",
+//             nodemailer.getTestMessageUrl(info)
+//         );
 
-    } catch (error) {
-        console.log("Email Failed");
-        console.log(error);
-    }
-};
+//     } catch (error) {
+//         console.log("Email Failed");
+//         console.log(error);
+//     }
+// };
