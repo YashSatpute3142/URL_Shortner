@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { string } from "zod";
 
 const nameSchema = z
     .string()
@@ -39,5 +39,25 @@ export const verifyEmailSchema = z.object({
 
 export const verifyUserSchema = z.object({
     name:nameSchema,
+})
+
+export const verifyPasswordSchema = z.object({
+    currentPassword: z
+    .string()
+    .min(1, {message:"Current Password is required"}),
+
+    newPassword: z
+    .string()
+    .min(6, {message: "New Passwor dmust be at least 6 character long."})
+    .max(100, {message:"New Password must not be more than 100 characters"}),
+
+    confirmPassword: z
+    .string()
+    .min(6, {message: "Confirm Password must be at leat 6 character long"})
+    .max(100, {message:"Confirm Password must not be more than 100 characters"})
+
+}).refine((data) => data.newPassword === data.confirmPassword, {
+    message:"Password don't match",
+    path:["confirmPassword"],
 })
 

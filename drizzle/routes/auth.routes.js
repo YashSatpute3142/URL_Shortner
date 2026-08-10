@@ -42,6 +42,16 @@ router
 .post(authControllers.postChangeEditPeofile)
 
 router
+.route("/change-password")
+.get(authControllers.getChangePasswordPage)
+.post(authControllers.postChangePassword)
+
+router 
+.route("/resend-password")
+.get(authControllers.getResendPasswordPage)
+.post(authControllers.postForgotPasswordPage)
+
+router
 .route("/logout")
 .get(authControllers.logoutUser)
 

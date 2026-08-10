@@ -335,3 +335,13 @@ export const updateUserByName = async({userId, name}) => {
     .set({name:name})
     .where(eq(usersTable.id, userId))
 }
+
+export const updateUserPassword = async({userId, newPassword}) => {
+    const newHashPassword = await hashPassword(newPassword);
+
+    return await db
+    .update(usersTable)
+    .set({password:newHashPassword})
+    .where(eq(usersTable.id, userId))
+
+}
