@@ -11,10 +11,10 @@ export const sendEmail = async ({ to, subject, html }) => {
     });
 
     if (error) {
-        console.error("Email failed ❌", error);
+        console.error("Email failed", error);
         throw error;
     }
 
-    console.log("Email sent ✅", data);
+    console.log("Email sent", data);
     return data;
 };

@@ -1,7 +1,28 @@
 import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
+import { getHtmlFromMjmlTemplete } from "../lib/get-html-from-mjml-templete.js";
 import { sendEmail } from "../lib/send-email.js";
-import { authenticateUser, cleareSession, clearVerifyEmailTokens, comparePassword, createAccessToken, createRefreshToken, createSessions, createUser,createVerifyEmailLink,findUserById,findVerificationEmailToken,generateRandomToken,getAllShortLinks,getUserByEmail, hashPassword, insertVerifyEmailToken, sendNewVefifyEmailLink, updateUserByName, updateUserPassword, verifyuserEmailAndUpdate } from "../services/auth.services.js";
-import { loginUserScema, registerUserSchema, verifyEmailSchema, verifyPasswordSchema, verifyUserSchema } from "../validators/auth-validation.js";
+import { authenticateUser, 
+  cleareSession, 
+  clearVerifyEmailTokens,
+  comparePassword, 
+  createAccessToken, 
+  createRefreshToken, 
+  createResetPasswordLink, 
+  createSessions, 
+  createUser,
+  createVerifyEmailLink,
+  findUserByEmail,findUserById,
+  findVerificationEmailToken,
+  generateRandomToken,
+  getAllShortLinks,
+  getUserByEmail, 
+  hashPassword, 
+  insertVerifyEmailToken, 
+  sendNewVefifyEmailLink, 
+  updateUserByName, 
+  updateUserPassword, 
+  verifyuserEmailAndUpdate } from "../services/auth.services.js";
+import { forgotPasswordSchema, loginUserScema, registerUserSchema, verifyEmailSchema, verifyPasswordSchema, verifyUserSchema } from "../validators/auth-validation.js";
 
 export const getRegisterPage = (req, res) => {
  
@@ -255,4 +276,32 @@ export const getResendPasswordPage = async(req, res) => {
   })
 }
 
-export const postForgotPasswordPage = () => {}
+export const postForgotPasswordPage = async(req, res) => {
+  const {data, error} =  forgotPasswordSchema.safeParse(req.body)
+
+   if (error) {
+  const errorMessages = error.issues.map((err) => err.message);
+  req.flash("errors", errorMessages);
+  return res.redirect("/resend-password");
+}
+
+const user = await findUserByEmail(data.email);
+
+if(user){
+  const resetPasswordLink = await createResetPasswordLink({userId: user.id})
+
+  const html = await getHtmlFromMjmlTemplete("reset-password-email", {
+  name:user.name,
+  link: resetPasswordLink,
+})
+
+sendEmail({
+  to: user.email,
+  subject:"RESET YOUR Password",
+  html,
+})
+
+}
+req.flash("formSubmitted", true)
+return res.redirect("/resend-password")
+}

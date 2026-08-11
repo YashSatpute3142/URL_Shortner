@@ -1,6 +1,6 @@
 import { and, eq, gte, like, lt, sql } from "drizzle-orm";
 import {db} from "../config/db.js";
-import { sessionsTable, shortLinksTable, usersTable, verifyEmailTokenTable } from "../drizzle/schema.js";
+import { passwordResetTokensTable, sessionsTable, shortLinksTable, usersTable, verifyEmailTokenTable } from "../drizzle/schema.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import crypto  from "crypto";
@@ -344,4 +344,28 @@ export const updateUserPassword = async({userId, newPassword}) => {
     .set({password:newHashPassword})
     .where(eq(usersTable.id, userId))
 
+}
+
+export const findUserByEmail = async(email) => {
+    const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+    
+    return user;
+}
+
+export const createResetPasswordLink = async({userId}) => {
+    const randomToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(randomToken).digest("hex");
+
+    await db
+    .delete(passwordResetTokensTable)
+    .where(eq(passwordResetTokensTable.userId, userId))
+
+    await db
+    .insert(passwordResetTokensTable)
+    .values({userId, tokenHash})
+
+    return `${process.env.FRONTEND_URL}/resend-password/${randomToken}`
 }
