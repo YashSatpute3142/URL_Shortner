@@ -369,3 +369,30 @@ export const createResetPasswordLink = async({userId}) => {
 
     return `${process.env.FRONTEND_URL}/resend-password/${randomToken}`
 }
+
+export const getResetPasswordToken = async(token) => {
+
+    const tokenHash = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+    const [data] = await db
+    .select()
+    .from(passwordResetTokensTable)
+    .where(
+    and(
+    eq(passwordResetTokensTable.tokenHash, tokenHash), 
+    gte(passwordResetTokensTable.expiresAt, sql`CURRENT_TIMESTAMP`)
+    )
+    );
+
+    return data;
+
+}
+
+export const clearResetPasswordToken = async(userId) => {
+    return await db
+    .delete(passwordResetTokensTable)
+    .where(eq(passwordResetTokensTable.userId, userId))
+}

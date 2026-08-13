@@ -3,6 +3,7 @@ import { getHtmlFromMjmlTemplete } from "../lib/get-html-from-mjml-templete.js";
 import { sendEmail } from "../lib/send-email.js";
 import { authenticateUser, 
   cleareSession, 
+  clearResetPasswordToken, 
   clearVerifyEmailTokens,
   comparePassword, 
   createAccessToken, 
@@ -15,6 +16,7 @@ import { authenticateUser,
   findVerificationEmailToken,
   generateRandomToken,
   getAllShortLinks,
+  getResetPasswordToken,
   getUserByEmail, 
   hashPassword, 
   insertVerifyEmailToken, 
@@ -22,7 +24,7 @@ import { authenticateUser,
   updateUserByName, 
   updateUserPassword, 
   verifyuserEmailAndUpdate } from "../services/auth.services.js";
-import { forgotPasswordSchema, loginUserScema, registerUserSchema, verifyEmailSchema, verifyPasswordSchema, verifyUserSchema } from "../validators/auth-validation.js";
+import { forgotPasswordSchema, loginUserScema, registerUserSchema, verifyEmailSchema, verifyPasswordSchema, verifyResetPasswordSchema, verifyUserSchema } from "../validators/auth-validation.js";
 
 export const getRegisterPage = (req, res) => {
  
@@ -304,4 +306,46 @@ sendEmail({
 }
 req.flash("formSubmitted", true)
 return res.redirect("/resend-password")
+}
+
+export  const getResetPasswordTokenPassword = async(req,res) => {
+  const {token} = req.params;
+  const passwordResetData = await getResetPasswordToken(token);
+
+  if(!passwordResetData) return res.render("auth/wrong-reset-password-token");
+
+  return res.render("auth/resend-password", {
+    formSubmitted: req.flash("formSubmitted")[0],
+    errors: req.flash("errors"),
+    token,
+  })
+
+}
+
+export const postResetPasswordToken = async(req, res) => {
+  const {token} = req.params;
+  const passwordResetData = await getResetPasswordToken(token);
+
+  if(!passwordResetData){
+    req.flash("errors", "Password Token is not Matching.")
+     return res.render("auth/wrong-reset-password-token");
+  }
+
+  const {data, error} = verifyResetPasswordSchema.safeParse(req.body);
+   if (error) {
+  const errorMessages = error.issues.map((err) => err.message);
+  req.flash("errors", errorMessages);
+  res.redirect(`/resend-password/${token}`);
+  }
+
+  const {newPassword} = data;
+
+  const user = await findUserById(passwordResetData.userId);
+
+  await clearResetPasswordToken(user.id);
+
+  await updateUserPassword({userId: user.id, newPassword});
+
+  return res.redirect("/login")
+
 }

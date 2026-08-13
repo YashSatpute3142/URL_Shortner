@@ -52,6 +52,14 @@ router
 .post(authControllers.postForgotPasswordPage)
 
 router
+.route("/resend-password/:token")
+.get(authControllers.getResetPasswordTokenPassword)
+.post(authControllers.postResetPasswordToken)
+
+router
+.route()
+
+router
 .route("/logout")
 .get(authControllers.logoutUser)
 

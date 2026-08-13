@@ -6,6 +6,7 @@ import {
   varchar,
   boolean,
   text,
+  mysqlEnum,
 } from "drizzle-orm/mysql-core";
 
 
@@ -33,6 +34,15 @@ export const passwordResetTokensTable = mysqlTable("passeord_reset_tokens", {
   tokenHash:text("token_hash").notNull(),
   expiresAt: timestamp("expires_at").default(sql`(CURRENT_TIMESTAMP + INTERVAL 1 HOUR)`).notNull(),
   createdAt:timestamp("created_at").defaultNow().notNull()
+})
+
+export const oauthAccountsTable = mysqlTable("oauth_accounts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull().references(() => usersTable.id, {onDelete:"cascade"}),
+  provider: mysqlEnum("provider", ["google", "github"]).notNull(),
+  providerAccountId: varchar("provider_account_id", {length:255}).notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+
 })
 
 // ==========================
