@@ -1,5 +1,6 @@
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
+import { ACCESS_TOKEN_EXPIRY, OAUTH_EXCHANGE_EXPIRY, REFRESH_TOKEN_EXPIRY } from "../config/constants.js";
 import { getHtmlFromMjmlTemplete } from "../lib/get-html-from-mjml-templete.js";
+import { google } from "../lib/oauth/google.js";
 import { sendEmail } from "../lib/send-email.js";
 import { authenticateUser, 
   cleareSession, 
@@ -25,7 +26,7 @@ import { authenticateUser,
   updateUserPassword, 
   verifyuserEmailAndUpdate } from "../services/auth.services.js";
 import { forgotPasswordSchema, loginUserScema, registerUserSchema, verifyEmailSchema, verifyPasswordSchema, verifyResetPasswordSchema, verifyUserSchema } from "../validators/auth-validation.js";
-
+import {decodeIdToken, generateCodeVerifier, generateState} from "arctic";
 export const getRegisterPage = (req, res) => {
  
   res.render("auth/register", {errors:req.flash("errors")});
@@ -348,4 +349,75 @@ export const postResetPasswordToken = async(req, res) => {
 
   return res.redirect("/login")
 
+}
+
+export const getGoogleLoginPage = async(req, res) => {
+  if(req.user) return res.redirect("/");
+
+  const state = generateState();
+  const codeVerifier = generateCodeVerifier();
+  const url = google.createAuthorizationURL(state, codeVerifier, [
+    "openid",
+    "profile",
+    "email",
+  ])
+  const cookieConfig = {
+    httpOnly:true,
+    secure:true,
+    maxAge:OAUTH_EXCHANGE_EXPIRY,
+    sameSite:"lax"
+  };
+
+  res.cookie("google_oauth_state", state, cookieConfig);
+  res.cookie("google_code_verifier", codeVerifier, cookieConfig);
+
+  res.redirect(url.toString())
+
+}
+
+export const getGoogleLoginCallback = async(req, res) => {
+  // google redirect with code and state in query params
+  // we will use code to find out the user
+  const {code, state} = req.query;
+  console.log(code, state);
+
+  const {
+    google_oauth_state: storedState,
+    google_code_verifier: codeVerifier,
+  } = req.cookies;
+
+  if(!code || !state || !storedState || !codeVerifier || state !== storedState) {
+    req.flash(
+      "errors",
+      "Couldn't login with google because of invalid login attempt. Please try again...:("
+    );
+
+    return res.redirect("/login");
+  }
+
+  let tokens;
+  try {
+    tokens = await google.validateAuthorizationCode(code, codeVerifier)
+    
+  } catch {
+     req.flash(
+      "errors",
+      "Couldn't login with google because of invalid login attempt. Please try again...:("
+    );
+    return res.redirect("/login")
+    
+  }
+
+  console.log("Token Google :", tokens);
+
+  const claims = decodeIdToken(tokens.idToken());
+  const {sub: googleUserId, name, email} = claims;
+
+  // conditon 1: user allrady exist with google's oauth linked
+
+  let user = await getUserWithOauthId({
+    provider:"google",
+    email,
+  })
+  
 }

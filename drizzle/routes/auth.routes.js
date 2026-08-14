@@ -57,7 +57,12 @@ router
 .post(authControllers.postResetPasswordToken)
 
 router
-.route()
+.route("/google")
+.get(authControllers.getGoogleLoginPage)
+
+router
+.route("/google/callback")
+.get(authControllers.getGoogleLoginCallback)
 
 router
 .route("/logout")

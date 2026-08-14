@@ -1,6 +1,6 @@
 import { and, eq, gte, like, lt, sql } from "drizzle-orm";
 import {db} from "../config/db.js";
-import { passwordResetTokensTable, sessionsTable, shortLinksTable, usersTable, verifyEmailTokenTable } from "../drizzle/schema.js";
+import { oauthAccountsTable, passwordResetTokensTable, sessionsTable, shortLinksTable, usersTable, verifyEmailTokenTable } from "../drizzle/schema.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import crypto  from "crypto";
@@ -395,4 +395,27 @@ export const clearResetPasswordToken = async(userId) => {
     return await db
     .delete(passwordResetTokensTable)
     .where(eq(passwordResetTokensTable.userId, userId))
+}
+
+export async function getUserWithOauthId({provider, email}) {
+    const [user] = await db
+    .select({
+        id:usersTable.id,
+        name:usersTable.name,
+        email:usersTable.email,
+        isEmailValid:usersTable.isEmailValid,
+        proveiderAccountId:oauthAccountsTable.providerAccountId,
+        provider:oauthAccountsTable.provider
+    })
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+    .leftJoin(
+        oauthAccountsTable,
+        and(
+            eq(oauthAccountsTable.provider, provider),
+            eq(oauthAccountsTable.userId, usersTable.id)
+        )
+    )
+    return user;
+    
 }
