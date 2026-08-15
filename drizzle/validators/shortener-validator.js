@@ -1,4 +1,4 @@
-import z from "zod"
+import z, { positive } from "zod"
 
 export const shortenerShema = z.object({
     url: z
@@ -14,3 +14,14 @@ export const shortenerShema = z.object({
     .max(10, {message: "Short code cannot be longer than 10 character." })
 
 }) 
+
+export const shoertenerSearchParamsSchema = z.object({
+    page: z.coerce
+    .number()
+    .int()
+    .positive()
+    .min(1)
+    .optional()
+    .default(1)
+    .catch(1)
+})

@@ -29,7 +29,7 @@ import { authenticateUser,
   updateUserByName, 
   updateUserPassword, 
   verifyuserEmailAndUpdate } from "../services/auth.services.js";
-import { forgotPasswordSchema, loginUserScema, registerUserSchema, verifyEmailSchema, verifyPasswordSchema, verifyResetPasswordSchema, verifyUserSchema } from "../validators/auth-validation.js";
+import { forgotPasswordSchema, loginUserScema, registerUserSchema, setPasswordSchema, verifyEmailSchema, verifyPasswordSchema, verifyResetPasswordSchema, verifyUserSchema } from "../validators/auth-validation.js";
 import {decodeIdToken, generateCodeVerifier, generateState} from "arctic";
 export const getRegisterPage = (req, res) => {
  
@@ -163,6 +163,7 @@ export const getProfilePage = async(req, res) => {
       name: user.name,
       email: user.email,
       isEmailValid:user.isEmailValid,
+      hasPassword:Boolean(user.password),
       createdAt: user.createdAt,
       links: userShortLinks,
       
@@ -559,5 +560,38 @@ if(!user) {
 }
 await authenticateUser({req, res, user, name, email});
 res.redirect("/");
+
+}
+
+export const getSetPasswordPage = async(req,res) => {
+  if(!req.user) return res.redirect("/");
+
+  return res.render("auth/set-password", {
+    errors: req.flash("errors"),
+
+  })
+}
+
+export const postSetPassword = async(req, res) => {
+  const {data, error} = setPasswordSchema.safeParse(req.body);
+
+   if (error) {
+  const errorMessages = error.issues.map((err) => err.message);
+  req.flash("errors", errorMessages);
+  res.redirect(`/set-password`);
+  }
+
+  const {newPassword} = data;
+  const user = await findUserById(req.user.id);
+  if(user.password){
+    req.flash(
+      "errors",
+      "You already have a Password, Insted Change your Password... "
+    )
+    return res.redirect("/set-password")
+  }
+
+  await updateUserPassword({userId:req.user.id, newPassword})
+  return res.redirect("/profile");
 
 }

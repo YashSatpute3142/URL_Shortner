@@ -1,7 +1,7 @@
 import crypto from "crypto";
 // import { loadLinks, saveLinks } from "../models/shortner.model.js";
 import { deleteShortCodeById, findShortLinkById, getAllShortLinks, getShortLinkByShortCode, insertShortLink, updateShortCode } from "../services/shortener.services.js";
-import { shortenerShema } from "../validators/shortener-validator.js";
+import { shoertenerSearchParamsSchema, shortenerShema } from "../validators/shortener-validator.js";
 import z from "zod";
 
 
@@ -10,7 +10,16 @@ export const getShortenerPage = async (req, res) => {
         //const file = await readFile(path.join("views", "index.html"), "utf-8");
         // const links = await loadLinks();
         if(!req.user) return res.redirect("/login");
-        const links = await getAllShortLinks(req.user.id);
+        // const links = await getAllShortLinks(req.user.id);
+
+        const searchParams = shoertenerSearchParamsSchema.safeParse(req.query)
+
+        const {shortLinks, totalCount} = await getAllShortLinks({
+            userId: req.user.id,
+            limit:10,
+            offset:(searchParams.data.page - 1) * 10,
+        })
+        const totalPages = Math.ceil(totalCount / 10)
 
         // let isLoggedIn = req.headers.cookie;
         // isLoggedIn = Boolean(isLoggedIn?.split("=")[1])
@@ -18,7 +27,13 @@ export const getShortenerPage = async (req, res) => {
         // let isLoggedIn = req.cookies.isLoggedIn;
         
 
-        return res.render("index", {links, host: req.headers.host,errors: req.flash('errors') })
+        return res.render("index", {
+            links: shortLinks, 
+            host: req.headers.host,
+            currentPage:searchParams.data.page,
+            totalPages:totalPages,  
+            errors: req.flash('errors') 
+        })
 
         
     } catch (error) {

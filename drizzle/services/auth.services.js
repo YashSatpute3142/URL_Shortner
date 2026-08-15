@@ -404,7 +404,7 @@ export async function getUserWithOauthId({provider, email}) {
         name:usersTable.name,
         email:usersTable.email,
         isEmailValid:usersTable.isEmailValid,
-        proveiderAccountId:oauthAccountsTable.providerAccountId,
+        providerAccountId:oauthAccountsTable.providerAccountId,
         provider:oauthAccountsTable.provider
     })
     .from(usersTable)

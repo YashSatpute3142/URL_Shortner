@@ -72,6 +72,10 @@ router
 .route("/github/callback")
 .get(authControllers.getGithubLoginCallback)
 
+router
+.route("/set-password")
+.get(authControllers.getSetPasswordPage)
+.post(authControllers.postSetPassword)
 
 router
 .route("/logout")
