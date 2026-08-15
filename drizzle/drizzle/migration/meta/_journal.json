@@ -57,6 +57,20 @@
       "when": 1786370022004,
       "tag": "0007_free_hannibal_king",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1786776806499,
+      "tag": "0008_previous_mentor",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1786777463319,
+      "tag": "0009_slippery_master_chief",
+      "breakpoints": true
     }
   ]
 }

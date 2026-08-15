@@ -56,7 +56,7 @@ export const usersTable = mysqlTable("users", {
 
   email: varchar({ length: 255 }).notNull().unique(),
 
-  password: varchar({ length: 255 }).notNull(),
+  password: varchar({ length: 255 }),
 
   isEmailValid:boolean("is_email_valid").default(false).notNull(),
 

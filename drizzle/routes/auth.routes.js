@@ -65,6 +65,15 @@ router
 .get(authControllers.getGoogleLoginCallback)
 
 router
+.route("/github")
+.get(authControllers.getGithubLoginPage)
+
+router
+.route("/github/callback")
+.get(authControllers.getGithubLoginCallback)
+
+
+router
 .route("/logout")
 .get(authControllers.logoutUser)
 
