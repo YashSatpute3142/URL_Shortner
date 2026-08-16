@@ -221,6 +221,7 @@
         </section>
 
     </div>
+       <!-- Pagination -->
 
    <% if (typeof totalPages !== "undefined" && totalPages > 1) { %>
 
@@ -239,7 +240,39 @@
             </span>
         <% } %>
 
-        <span class="page-link"><%= currentPage %></span>
+
+        <% 
+        let startPage = Math.max(1, currentPage -2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+
+        %>
+
+        <% if(startPage > 1) { %>
+            <a href="?page=1" class="page-link">1</a>
+            <% if(startPage >2){ %>
+                <span class="ellipsis">...</span>
+            <% } %>
+        <% } %>
+
+        <% for (let i = startPage; i <= endPage; i++){ %>
+            <% if (i === currentPage) { %>
+                <span class="page-link current"><%= i %></span>
+
+           <% } else { %>
+            <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+
+           <% } %>
+
+      <%  } %>
+
+      <% if(endPage < totalPages) { %>
+        <% if(endPage < totalPages - 1) { %>
+            <span class="ellipsis">...</span>
+
+            <% } %>
+            <a href="?page=<%= totalPages %>" class="page-link"><%= totalPages %></a>
+        <% } %>
+
 
 
         <% if (currentPage < totalPages) { %>
@@ -259,80 +292,8 @@
 
 <% } %>
 
-    <!-- Pagination -->
+ 
 
-    <!-- <% if(typeof totalPages !== "undefined" && totalPages > 1){ %>
-
-        <div class="pagination">
-
-            <% if(currentPage > 1){ %>
-
-                <a
-                    href="?page=<%= currentPage-1 %>"
-                    class="page-link"
-                >
-                    &laquo; Previous
-                </a>
-
-            <% }else{ %>
-
-                <span class="page-link disabled">
-
-                    &laquo; Previous
-
-                </span>
-
-            <% } %>
-
-            <% for(let i=1;i<=totalPages;i++){ %>
-
-                <% if(i===currentPage){ %>
-
-                    <span class="page-link current">
-
-                        <%= i %>
-
-                    </span>
-
-                <% }else{ %>
-
-                    <a
-                        href="?page=<%= i %>"
-                        class="page-link"
-                    >
-
-                        <%= i %>
-
-                    </a>
-
-                <% } %>
-
-            <% } %>
-
-            <% if(currentPage < totalPages){ %>
-
-                <a
-                    href="?page=<%= currentPage+1 %>"
-                    class="page-link"
-                >
-
-                    Next &raquo;
-
-                </a>
-
-            <% }else{ %>
-
-                <span class="page-link disabled">
-
-                    Next &raquo;
-
-                </span>
-
-            <% } %>
-
-        </div>
-
-    <% } %> -->
 
 
     <%- include('./partials/footer') %>

@@ -58,6 +58,8 @@ export const usersTable = mysqlTable("users", {
 
   password: varchar({ length: 255 }),
 
+  avatarUrl: text("avatar_url"),
+
   isEmailValid:boolean("is_email_valid").default(false).notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),

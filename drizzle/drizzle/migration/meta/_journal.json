@@ -71,6 +71,13 @@
       "when": 1786777463319,
       "tag": "0009_slippery_master_chief",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1786881674808,
+      "tag": "0010_past_boomer",
+      "breakpoints": true
     }
   ]
 }
